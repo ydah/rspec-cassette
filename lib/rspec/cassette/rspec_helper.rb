@@ -24,8 +24,8 @@ RSpec.configure do |config|
   config.include RSpec::Cassette::RSpecHelper
 
   config.around(:each) do |example|
-    cassette_name = example.metadata[:use_cassette] || example.metadata[:rspec_replay]
-    options = example.metadata[:cassette_options] || example.metadata[:rspec_replay_options]
+    cassette_name = example.metadata[:use_cassette]
+    options = example.metadata[:cassette_options] || {}
     use_cassette(cassette_name, **options) if cassette_name
     example.run
   end
