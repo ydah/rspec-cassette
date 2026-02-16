@@ -1,0 +1,45 @@
+module RSpec
+  module Cassette
+    VERSION: String
+    class Error < StandardError
+    end
+
+    class CassetteNotFoundError < Error
+    end
+
+    class CassetteParseError < Error
+    end
+
+    class Configuration
+      attr_accessor cassettes_dir: String
+      attr_accessor default_match_on: Array[Symbol]
+    end
+
+    def self.configuration: () -> Configuration
+    def self.configure: () { (Configuration) -> void } -> void
+
+    class Interaction
+      attr_reader request: Hash[String, untyped]
+      attr_reader response: Hash[String, untyped]
+      def initialize: (Hash[String, untyped] raw_interaction) -> void
+      def method: () -> Symbol
+      def uri: () -> String
+      def request_headers: () -> Hash[String, Array[String]]
+      def request_body: () -> String
+      def status: () -> Integer
+      def response_headers: () -> Hash[String, Array[String]]
+      def response_body: () -> String
+    end
+
+    class Cassette
+      attr_reader interactions: Array[Interaction]
+      attr_reader path: String
+      def initialize: (String path) -> void
+    end
+
+    class StubRegistrar
+      def initialize: (Cassette cassette, ?match_on: Array[Symbol] | nil) -> void
+      def register!: () -> void
+    end
+  end
+end

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
-require "rspec/replay"
+require "rspec/cassette"
+require "rspec/cassette/rspec"
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

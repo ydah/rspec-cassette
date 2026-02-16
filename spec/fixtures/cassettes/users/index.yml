@@ -1,0 +1,23 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://api.example.com/v1/users
+    body:
+      encoding: UTF-8
+      string: ""
+    headers:
+      Accept:
+      - application/json
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json
+    body:
+      encoding: UTF-8
+      string: "{\"users\":[{\"id\":1}]}"
+  recorded_at: Thu, 01 Jan 2025 00:00:00 GMT
+recorded_with: VCR 5.1.0

@@ -1,38 +1,95 @@
-# Rspec::Replay
+# rspec-cassette
 
-TODO: Delete this and the text below, and describe your gem
-
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/rspec/replay`. To experiment with that code, run `bin/console` for an interactive prompt.
+Replay VCR YAML cassettes as WebMock stubs in RSpec.
 
 ## Installation
-
-TODO: Replace `UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG` with your gem name right after releasing it to RubyGems.org. Please do not do it earlier due to security reasons. Alternatively, replace this section with instructions to install your gem from git if you don't plan to release to RubyGems.org.
 
 Install the gem and add to the application's Gemfile by executing:
 
 ```bash
-bundle add UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
+bundle add rspec-cassette
 ```
 
 If bundler is not being used to manage dependencies, install the gem by executing:
 
 ```bash
-gem install UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
+gem install rspec-cassette
 ```
 
 ## Usage
 
-TODO: Write usage instructions here
+Require the RSpec integration in your `spec_helper.rb` or `rails_helper.rb`:
+
+```ruby
+require "rspec/cassette/rspec"
+
+Rspec::Cassette.configure do |config|
+  config.cassettes_dir = "spec/fixtures/cassettes"
+  config.default_match_on = %i[method uri]
+end
+```
+
+Helper method style:
+
+```ruby
+describe "API client" do
+  it "fetches users" do
+    use_cassette("users/index")
+    # ...
+  end
+end
+```
+
+Metadata style:
+
+```ruby
+it "fetches users", use_cassette: "users/index" do
+  # ...
+end
+```
+
+To pass match options per example:
+
+```ruby
+it "matches body", use_cassette: "users/index", cassette_options: { match_on: %i[method uri body] } do
+  # ...
+end
+```
+
+## Migration Guide
+
+Before:
+
+```ruby
+it "fetches users" do
+  VCR.use_cassette("users/index") do
+    # ...
+  end
+end
+```
+
+After:
+
+```ruby
+it "fetches users", use_cassette: "users/index" do
+  # ...
+end
+```
+
+## Configuration Options
+
+| Option | Default | Description |
+| --- | --- | --- |
+| `cassettes_dir` | `spec/fixtures/cassettes` | Base directory for cassette files |
+| `default_match_on` | `[:method, :uri]` | WebMock matchers to apply |
 
 ## Development
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
-
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+After checking out the repo, run `bundle install` to install dependencies. Then run `bundle exec rspec` to execute the tests.
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/rspec-replay.
+Bug reports and pull requests are welcome on GitHub at https://github.com/ydah/rspec-cassette.
 
 ## License
 
