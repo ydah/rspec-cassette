@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require "webmock/rspec"
-require "rspec/cassette/rspec"
+require "rspec/cassette/rspec_helper"
 
 RSpec.describe "RSpec::Cassette RSpec integration" do
   it "registers using helper" do

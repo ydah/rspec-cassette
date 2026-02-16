@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require "rspec/cassette"
-require "rspec/cassette/rspec"
+require "rspec/cassette/rspec_helper"
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

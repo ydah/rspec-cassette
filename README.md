@@ -21,7 +21,7 @@ gem install rspec-cassette
 Require the RSpec integration in your `spec_helper.rb` or `rails_helper.rb`:
 
 ```ruby
-require "rspec/cassette/rspec"
+require "rspec/cassette/rspec_helper"
 
 Rspec::Cassette.configure do |config|
   config.cassettes_dir = "spec/fixtures/cassettes"
