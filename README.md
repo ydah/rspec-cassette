@@ -1,6 +1,6 @@
 # rspec-cassette
 
-Replay VCR YAML cassettes as WebMock stubs in RSpec.
+Replay test suite's HTTP interactions as WebMock stubs in RSpec.
 
 ## Installation
 

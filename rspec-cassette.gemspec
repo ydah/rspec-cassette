@@ -7,8 +7,8 @@ Gem::Specification.new do |spec|
   spec.version = RSpec::Cassette::VERSION
   spec.authors = ["Yudai Takada"]
   spec.email = ["t.yudai92@gmail.com"]
-  spec.summary = "Replay VCR cassettes as WebMock stubs in RSpec."
-  spec.description = "Load VCR YAML cassettes and register WebMock stubs for RSpec."
+  spec.summary = "Replay test suite's HTTP interactions as WebMock stubs in RSpec."
+  spec.description = "Load test suite's HTTP interactions and register WebMock stubs for RSpec."
   spec.homepage = "https://github.com/ydah/rspec-cassette"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.1.0"
