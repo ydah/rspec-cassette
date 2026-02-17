@@ -8,6 +8,7 @@ module RSpec
                     :allow_http_connections_when_no_cassette,
                     :ignore_localhost,
                     :ignore_hosts
+      attr_reader :ignore_request_blocks
 
       def initialize
         @cassettes_dir = "spec/fixtures/cassettes"
@@ -15,6 +16,11 @@ module RSpec
         @allow_http_connections_when_no_cassette = false
         @ignore_localhost = false
         @ignore_hosts = []
+        @ignore_request_blocks = []
+      end
+
+      def ignore_request(&block)
+        @ignore_request_blocks << block if block
       end
     end
   end

@@ -16,6 +16,8 @@ module RSpec
       attr_accessor allow_http_connections_when_no_cassette: bool
       attr_accessor ignore_localhost: bool
       attr_accessor ignore_hosts: Array[String]
+      attr_reader ignore_request_blocks: Array[Proc]
+      def ignore_request: () { (untyped request) -> untyped } -> void
     end
 
     def self.configuration: () -> Configuration

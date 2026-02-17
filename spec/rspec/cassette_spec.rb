@@ -26,6 +26,7 @@ RSpec.describe RSpec::Cassette do
       expect(config.allow_http_connections_when_no_cassette).to be(false)
       expect(config.ignore_localhost).to be(false)
       expect(config.ignore_hosts).to eq([])
+      expect(config.ignore_request_blocks).to eq([])
     end
   end
 end

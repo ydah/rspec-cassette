@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "uri"
+
 RSpec.describe RSpec::Cassette::NetConnectManager do
   let(:configuration) { RSpec::Cassette::Configuration.new }
   subject(:manager) { described_class.new(configuration) }
@@ -59,6 +61,39 @@ RSpec.describe RSpec::Cassette::NetConnectManager do
 
         expect(WebMock).to have_received(:disable_net_connect!)
           .with(allow_localhost: true, allow: ["selenium-hub"])
+      end
+    end
+
+    context "when ignore_request block is configured" do
+      it "converts block to a WebMock allow matcher" do
+        configuration.ignore_request do |request|
+          URI(request.uri).port == 9200
+        end
+
+        expect(WebMock).to receive(:disable_net_connect!) do |**options|
+          expect(options[:allow]).to be_an(Array)
+          expect(options[:allow].size).to eq(1)
+
+          matcher = options[:allow].first
+          expect(matcher.call(URI("http://example.test:9200"))).to be(true)
+          expect(matcher.call(URI("http://example.test:443"))).to be(false)
+        end
+
+        manager.disable!
+      end
+    end
+
+    context "when ignore_hosts and ignore_request are configured together" do
+      it "keeps both host and block matchers in allow list" do
+        configuration.ignore_hosts = ["selenium-hub"]
+        configuration.ignore_request { |request| request.uri.include?("localhost") }
+
+        expect(WebMock).to receive(:disable_net_connect!) do |**options|
+          expect(options[:allow].first).to eq("selenium-hub")
+          expect(options[:allow].last.call(URI("http://localhost:3000"))).to be(true)
+        end
+
+        manager.disable!
       end
     end
   end
