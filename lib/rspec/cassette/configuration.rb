@@ -6,13 +6,15 @@ module RSpec
       attr_accessor :cassettes_dir,
                     :default_match_on,
                     :allow_http_connections_when_no_cassette,
-                    :ignore_localhost
+                    :ignore_localhost,
+                    :ignore_hosts
 
       def initialize
         @cassettes_dir = "spec/fixtures/cassettes"
         @default_match_on = %i[method uri]
         @allow_http_connections_when_no_cassette = false
         @ignore_localhost = false
+        @ignore_hosts = []
       end
     end
   end

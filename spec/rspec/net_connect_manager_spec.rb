@@ -36,6 +36,31 @@ RSpec.describe RSpec::Cassette::NetConnectManager do
         expect(WebMock).to have_received(:disable_net_connect!).with(allow_localhost: true)
       end
     end
+
+    context "when ignore_hosts are configured" do
+      it "passes allow option with the configured hosts" do
+        configuration.ignore_hosts = %w[selenium-hub chromedriver]
+        allow(WebMock).to receive(:disable_net_connect!)
+
+        manager.disable!
+
+        expect(WebMock).to have_received(:disable_net_connect!)
+          .with(allow: %w[selenium-hub chromedriver])
+      end
+    end
+
+    context "when ignore_localhost and ignore_hosts are configured" do
+      it "passes both allow_localhost and allow options" do
+        configuration.ignore_localhost = true
+        configuration.ignore_hosts = ["selenium-hub"]
+        allow(WebMock).to receive(:disable_net_connect!)
+
+        manager.disable!
+
+        expect(WebMock).to have_received(:disable_net_connect!)
+          .with(allow_localhost: true, allow: ["selenium-hub"])
+      end
+    end
   end
 
   describe "#restore!" do

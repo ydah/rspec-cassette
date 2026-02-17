@@ -14,6 +14,7 @@ module RSpec
 
         options = {}
         options[:allow_localhost] = true if @configuration.ignore_localhost
+        options[:allow] = @configuration.ignore_hosts unless @configuration.ignore_hosts.empty?
 
         WebMock.disable_net_connect!(**options)
       end

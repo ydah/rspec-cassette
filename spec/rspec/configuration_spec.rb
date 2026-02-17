@@ -8,6 +8,7 @@ RSpec.describe RSpec::Cassette::Configuration do
     expect(configuration.default_match_on).to eq(%i[method uri])
     expect(configuration.allow_http_connections_when_no_cassette).to be(false)
     expect(configuration.ignore_localhost).to be(false)
+    expect(configuration.ignore_hosts).to eq([])
   end
 
   it "allows overriding allow_http_connections_when_no_cassette" do
@@ -20,5 +21,11 @@ RSpec.describe RSpec::Cassette::Configuration do
     configuration.ignore_localhost = true
 
     expect(configuration.ignore_localhost).to be(true)
+  end
+
+  it "allows overriding ignore_hosts" do
+    configuration.ignore_hosts = %w[selenium-hub chromedriver]
+
+    expect(configuration.ignore_hosts).to eq(%w[selenium-hub chromedriver])
   end
 end
