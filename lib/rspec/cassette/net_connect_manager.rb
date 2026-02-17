@@ -12,7 +12,10 @@ module RSpec
       def disable!
         return if @configuration.allow_http_connections_when_no_cassette
 
-        WebMock.disable_net_connect!
+        options = {}
+        options[:allow_localhost] = true if @configuration.ignore_localhost
+
+        WebMock.disable_net_connect!(**options)
       end
 
       def restore!

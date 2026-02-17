@@ -24,6 +24,7 @@ RSpec.describe RSpec::Cassette do
       expect(config.cassettes_dir).to eq("spec/fixtures/cassettes")
       expect(config.default_match_on).to eq(%i[method uri])
       expect(config.allow_http_connections_when_no_cassette).to be(false)
+      expect(config.ignore_localhost).to be(false)
     end
   end
 end

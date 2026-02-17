@@ -25,6 +25,17 @@ RSpec.describe RSpec::Cassette::NetConnectManager do
         expect(WebMock).not_to have_received(:disable_net_connect!)
       end
     end
+
+    context "when ignore_localhost is true" do
+      it "passes allow_localhost option" do
+        configuration.ignore_localhost = true
+        allow(WebMock).to receive(:disable_net_connect!)
+
+        manager.disable!
+
+        expect(WebMock).to have_received(:disable_net_connect!).with(allow_localhost: true)
+      end
+    end
   end
 
   describe "#restore!" do

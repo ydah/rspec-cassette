@@ -7,11 +7,18 @@ RSpec.describe RSpec::Cassette::Configuration do
     expect(configuration.cassettes_dir).to eq("spec/fixtures/cassettes")
     expect(configuration.default_match_on).to eq(%i[method uri])
     expect(configuration.allow_http_connections_when_no_cassette).to be(false)
+    expect(configuration.ignore_localhost).to be(false)
   end
 
   it "allows overriding allow_http_connections_when_no_cassette" do
     configuration.allow_http_connections_when_no_cassette = true
 
     expect(configuration.allow_http_connections_when_no_cassette).to be(true)
+  end
+
+  it "allows overriding ignore_localhost" do
+    configuration.ignore_localhost = true
+
+    expect(configuration.ignore_localhost).to be(true)
   end
 end
