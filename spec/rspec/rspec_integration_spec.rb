@@ -15,4 +15,16 @@ RSpec.describe "RSpec::Cassette RSpec integration" do
     response = Net::HTTP.get(URI("https://api.example.com/v1/users"))
     expect(response).to eq("{\"users\":[{\"id\":1}]}")
   end
+
+  it "registers using vcr metadata", vcr: { cassette_name: "users/index" } do
+    response = Net::HTTP.get(URI("https://api.example.com/v1/users"))
+    expect(response).to eq("{\"users\":[{\"id\":1}]}")
+  end
+
+  it "prioritizes use_cassette over vcr metadata",
+     use_cassette: "users/index",
+     vcr: { cassette_name: "missing/cassette" } do
+    response = Net::HTTP.get(URI("https://api.example.com/v1/users"))
+    expect(response).to eq("{\"users\":[{\"id\":1}]}")
+  end
 end

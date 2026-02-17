@@ -23,7 +23,7 @@ Require the RSpec integration in your `spec_helper.rb` or `rails_helper.rb`:
 ```ruby
 require "rspec/cassette/rspec_helper"
 
-Rspec::Cassette.configure do |config|
+RSpec::Cassette.configure do |config|
   config.cassettes_dir = "spec/fixtures/cassettes"
   config.default_match_on = %i[method uri]
 end
@@ -44,6 +44,18 @@ Metadata style:
 
 ```ruby
 it "fetches users", use_cassette: "users/index" do
+  # ...
+end
+```
+
+VCR metadata compatibility style:
+
+```ruby
+it "fetches users", vcr: true do
+  # cassette name is auto-generated from example descriptions
+end
+
+it "matches request body", vcr: { cassette_name: "users/index", match_requests_on: %i[method uri body] } do
   # ...
 end
 ```

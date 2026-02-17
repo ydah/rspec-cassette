@@ -24,9 +24,8 @@ RSpec.configure do |config|
   config.include RSpec::Cassette::RSpecHelper
 
   config.around(:each) do |example|
-    cassette_name = example.metadata[:use_cassette]
-    options = example.metadata[:cassette_options] || {}
-    use_cassette(cassette_name, **options) if cassette_name
+    resolved = RSpec::Cassette::MetadataResolver.new(example).resolve
+    use_cassette(resolved[:cassette_name], **resolved[:cassette_options]) if resolved
     example.run
   end
 end

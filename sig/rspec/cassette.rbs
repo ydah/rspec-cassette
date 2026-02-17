@@ -41,5 +41,10 @@ module RSpec
       def initialize: (Cassette cassette, ?match_on: Array[Symbol] | nil) -> void
       def register!: () -> void
     end
+
+    class MetadataResolver
+      def initialize: (untyped example) -> void
+      def resolve: () -> Hash[Symbol, untyped]?
+    end
   end
 end
