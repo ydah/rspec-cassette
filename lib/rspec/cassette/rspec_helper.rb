@@ -24,8 +24,15 @@ RSpec.configure do |config|
   config.include RSpec::Cassette::RSpecHelper
 
   config.around(:each) do |example|
-    resolved = RSpec::Cassette::MetadataResolver.new(example).resolve
-    use_cassette(resolved[:cassette_name], **resolved[:cassette_options]) if resolved
-    example.run
+    manager = RSpec::Cassette::NetConnectManager.new(RSpec::Cassette.configuration)
+    manager.disable!
+
+    begin
+      resolved = RSpec::Cassette::MetadataResolver.new(example).resolve
+      use_cassette(resolved[:cassette_name], **resolved[:cassette_options]) if resolved
+      example.run
+    ensure
+      manager.restore!
+    end
   end
 end

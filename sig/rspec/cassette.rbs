@@ -13,6 +13,7 @@ module RSpec
     class Configuration
       attr_accessor cassettes_dir: String
       attr_accessor default_match_on: Array[Symbol]
+      attr_accessor allow_http_connections_when_no_cassette: bool
     end
 
     def self.configuration: () -> Configuration
@@ -45,6 +46,12 @@ module RSpec
     class MetadataResolver
       def initialize: (untyped example) -> void
       def resolve: () -> Hash[Symbol, untyped]?
+    end
+
+    class NetConnectManager
+      def initialize: (Configuration configuration) -> void
+      def disable!: () -> void
+      def restore!: () -> void
     end
   end
 end

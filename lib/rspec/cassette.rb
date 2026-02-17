@@ -6,6 +6,7 @@ require_relative "cassette/configuration"
 require_relative "cassette/cassette"
 require_relative "cassette/interaction"
 require_relative "cassette/metadata_resolver"
+require_relative "cassette/net_connect_manager"
 require_relative "cassette/stub_registrar"
 
 module RSpec
