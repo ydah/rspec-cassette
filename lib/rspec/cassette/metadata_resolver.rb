@@ -93,20 +93,31 @@ module RSpec
       end
 
       def build_vcr_compatible_cassette_name
-        parts = example.example_group.parent_groups.reverse.map(&:description)
-        parts << example.description
-
-        parts
-          .compact
-          .map(&:to_s)
-          .map(&:strip)
-          .reject(&:empty?)
-          .map { |part| normalize_cassette_name_part(part) }
-          .join("/")
+        sanitize_cassette_name(self.class.build_name_from_metadata(metadata))
       end
 
-      def normalize_cassette_name_part(part)
-        part.split("/").map { |segment| segment.gsub(/[^\w]+/, "_") }.join("/")
+      def sanitize_cassette_name(name)
+        name.gsub(/[^[:word:]\-\/]+/, "_")
+      end
+
+      def self.build_name_from_metadata(source_metadata)
+        description =
+          if source_metadata[:description].to_s.empty?
+            source_metadata[:scoped_id].to_s
+          else
+            source_metadata[:description].to_s
+          end
+        example_group = if source_metadata.key?(:example_group)
+                          source_metadata[:example_group]
+                        else
+                          source_metadata[:parent_example_group]
+                        end
+
+        if example_group
+          [build_name_from_metadata(example_group), description].join("/")
+        else
+          description
+        end
       end
     end
   end

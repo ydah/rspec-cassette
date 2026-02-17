@@ -3,37 +3,26 @@
 RSpec.describe RSpec::Cassette::MetadataResolver do
   subject(:resolved) { described_class.new(example_instance).resolve }
   let(:metadata) { {} }
-  let(:example_description) { "example description" }
-  let(:parent_group_descriptions) { [] }
-
-  let(:example_group) do
-    double(
-      "ExampleGroup",
-      parent_groups: parent_group_descriptions.map { |description| double("Group", description: description) }
-    )
-  end
 
   let(:example_instance) do
     double(
       "Example",
-      metadata: metadata,
-      description: example_description,
-      example_group: example_group
+      metadata: metadata
     )
   end
 
   context "when use_cassette metadata is present" do
     let(:metadata) do
       {
-        use_cassette: "users/index",
+        use_cassette: "resource/path",
         cassette_options: { "match_on" => %i[method uri body] },
-        vcr: { cassette_name: "ignored/by/priority" }
+        vcr: { cassette_name: "ignored/path/by_priority" }
       }
     end
 
     it "prioritizes use_cassette over vcr metadata" do
       expect(resolved).to eq(
-        cassette_name: "users/index",
+        cassette_name: "resource/path",
         cassette_options: { match_on: %i[method uri body] }
       )
     end
@@ -61,13 +50,22 @@ RSpec.describe RSpec::Cassette::MetadataResolver do
   end
 
   context "when vcr metadata is true" do
-    let(:metadata) { { vcr: true } }
-    let(:parent_group_descriptions) { ["Request spec", "w/ valid params", nil, " "] }
-    let(:example_description) { "#call 1.2.3.1" }
+    let(:metadata) do
+      {
+        vcr: true,
+        description: "#action 1.2.3.1",
+        example_group: {
+          description: "w/ sample params",
+          example_group: {
+            description: "Top level spec"
+          }
+        }
+      }
+    end
 
     it "builds vcr-compatible cassette name from descriptions" do
       expect(resolved).to eq(
-        cassette_name: "w/_valid_params/Request_spec/_call_1_2_3_1",
+        cassette_name: "Top_level_spec/w/_sample_params/_action_1_2_3_1",
         cassette_options: {}
       )
     end
@@ -77,7 +75,7 @@ RSpec.describe RSpec::Cassette::MetadataResolver do
     let(:metadata) do
       {
         vcr: {
-          "cassette_name" => "users/index",
+          "cassette_name" => "resource/path",
           "match_requests_on" => %i[method uri body]
         }
       }
@@ -85,7 +83,7 @@ RSpec.describe RSpec::Cassette::MetadataResolver do
 
     it "converts match_requests_on to match_on" do
       expect(resolved).to eq(
-        cassette_name: "users/index",
+        cassette_name: "resource/path",
         cassette_options: { match_on: %i[method uri body] }
       )
     end
@@ -95,7 +93,7 @@ RSpec.describe RSpec::Cassette::MetadataResolver do
     let(:metadata) do
       {
         vcr: {
-          cassette_name: "users/index",
+          cassette_name: "resource/path",
           match_on: %i[method uri],
           match_requests_on: %i[method uri body]
         }
@@ -104,23 +102,61 @@ RSpec.describe RSpec::Cassette::MetadataResolver do
 
     it "keeps explicit match_on and drops match_requests_on" do
       expect(resolved).to eq(
-        cassette_name: "users/index",
+        cassette_name: "resource/path",
         cassette_options: { match_on: %i[method uri] }
       )
     end
   end
 
   context "when vcr metadata is truthy but not a hash" do
-    let(:metadata) { { vcr: "enabled" } }
-    let(:parent_group_descriptions) { ["API/v1"] }
-    let(:example_description) { "GET #show" }
+    let(:metadata) do
+      {
+        vcr: "enabled",
+        description: "FETCH #item",
+        example_group: { description: "Public/v1" }
+      }
+    end
 
     it "treats it as enabled and resolves cassette name automatically" do
       expect(resolved).to eq(
-        cassette_name: "API/v1/GET_show",
+        cassette_name: "Public/v1/FETCH_item",
         cassette_options: {}
       )
     end
   end
 
+  context "when vcr metadata includes non-ascii descriptions" do
+    let(:metadata) do
+      {
+        vcr: true,
+        description: "多言語 テストケース",
+        example_group: { description: "General Context" }
+      }
+    end
+
+    it "keeps non-ascii characters while normalizing spaces" do
+      expect(resolved).to eq(
+        cassette_name: "General_Context/多言語_テストケース",
+        cassette_options: {}
+      )
+    end
+  end
+
+  context "when example description is empty" do
+    let(:metadata) do
+      {
+        vcr: true,
+        description: "",
+        scoped_id: "1:2",
+        example_group: { description: "Top level spec" }
+      }
+    end
+
+    it "uses scoped_id for the cassette name" do
+      expect(resolved).to eq(
+        cassette_name: "Top_level_spec/1_2",
+        cassette_options: {}
+      )
+    end
+  end
 end
