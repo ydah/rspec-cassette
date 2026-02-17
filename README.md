@@ -26,6 +26,10 @@ require "rspec/cassette/rspec_helper"
 RSpec::Cassette.configure do |config|
   config.cassettes_dir = "spec/fixtures/cassettes"
   config.default_match_on = %i[method uri]
+  config.allow_http_connections_when_no_cassette = false
+  config.ignore_localhost = true
+  config.ignore_hosts = ["selenium-hub", "chromedriver"]
+  config.ignore_request { |request| URI(request.uri).port == 9200 }
 end
 ```
 
@@ -68,6 +72,35 @@ it "matches body", use_cassette: "users/index", cassette_options: { match_on: %i
 end
 ```
 
+## Network Connection Controls
+
+By default, `rspec-cassette` now blocks outgoing HTTP connections when no cassette is active:
+
+```ruby
+RSpec::Cassette.configure do |config|
+  config.allow_http_connections_when_no_cassette = false
+end
+```
+
+Allow passthrough for localhost or specific hosts:
+
+```ruby
+RSpec::Cassette.configure do |config|
+  config.ignore_localhost = true
+  config.ignore_hosts = ["selenium-hub", "chromedriver"]
+end
+```
+
+Use `ignore_request` for custom conditions:
+
+```ruby
+RSpec::Cassette.configure do |config|
+  config.ignore_request do |request|
+    URI(request.uri).port == 9200
+  end
+end
+```
+
 ## Migration Guide
 
 Before:
@@ -94,6 +127,10 @@ end
 | --- | --- | --- |
 | `cassettes_dir` | `spec/fixtures/cassettes` | Base directory for cassette files |
 | `default_match_on` | `[:method, :uri]` | WebMock matchers to apply |
+| `allow_http_connections_when_no_cassette` | `false` | Allow real HTTP when no cassette is active |
+| `ignore_localhost` | `false` | Allow localhost requests while other outgoing requests are blocked |
+| `ignore_hosts` | `[]` | Allow specific hosts while other outgoing requests are blocked |
+| `ignore_request` | none | Register predicate blocks to allow specific requests |
 
 ## Development
 
